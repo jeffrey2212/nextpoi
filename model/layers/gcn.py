@@ -15,33 +15,37 @@ class GCNLayer(nn.Module):
         return F.relu(x)
 
 class GCN(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers, num_nodes):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_layers):
         super(GCN, self).__init__()
         self.layers = nn.ModuleList()
-        self.layers.append(GCNLayer(input_dim, hidden_dim, num_nodes))
-        for _ in range(num_layers - 2):
-            self.layers.append(GCNLayer(hidden_dim, hidden_dim, num_nodes))
-        self.layers.append(GCNLayer(hidden_dim, output_dim, num_nodes))
-
+        # First layer adjusts from the input dimension to the hidden dimension
+        self.layers.append(GCNLayer(input_dim, hidden_dim))
+        # Intermediate layers maintain the hidden dimension
+        for _ in range(1, num_layers - 1):
+            self.layers.append(GCNLayer(hidden_dim, hidden_dim))
+        # Final layer adjusts from the hidden dimension to the output dimension
+        self.layers.append(GCNLayer(hidden_dim, output_dim))
+        
     def forward(self, x, adj):
         for layer in self.layers:
             x = layer(x, adj)
         return x
+
 if __name__ == '__main__':
     # Define input dimensions and model hyperparameters
-    input_dim = 8
+    input_dim = 64
     hidden_dim = 128
     output_dim = 10
     num_layers = 2
     num_nodes = 1000  # Define number of nodes
-
+    num_pois = num_nodes 
     # Create a sample input and adjacency matrix
     batch_size = 4
     x = torch.randn(batch_size, num_nodes, input_dim)
     adj = torch.randn(batch_size, num_nodes, num_nodes)  # Random adjacency matrix
 
     # Create an instance of the GCN model
-    gcn_model = GCN(input_dim, hidden_dim, output_dim, num_layers, num_nodes)
+    gcn_model = GCN(input_dim, hidden_dim, output_dim, num_layers, num_pois)
 
     # Print the model architecture
     print("GCN Model Architecture:")
