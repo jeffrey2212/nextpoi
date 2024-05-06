@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from utils import load_data, preprocess_data, evaluate_model, print_metrics
+from utils import load_data,  evaluate_model, print_metrics
 from model import FusionModel
 
 def train(model, train_data, train_labels, criterion, optimizer, device, num_epochs):
@@ -43,8 +43,8 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = load_data("nyc_preprocessed.pkl")
 
     # Preprocess the data
-    X_train, y_train, label_encoders = preprocess_data(X_train, y_train)
-    X_test, y_test, _ = preprocess_data(X_test, y_test)
+    #X_train, y_train, label_encoders = preprocess_data(X_train, y_train)
+    #X_test, y_test, _ = preprocess_data(X_test, y_test)
 
     # Convert data to PyTorch tensors
     X_train = torch.tensor(X_train.values, dtype=torch.float32)

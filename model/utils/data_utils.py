@@ -12,12 +12,12 @@ def load_data(data_file):
     return X_train, X_test, y_train, y_test
 
 
-def preprocess_data(data, target=None):
+#def preprocess_data(data, target=None):
     # Create a LabelEncoder for each non-numeric column
-    label_encoders = {}
-    for column in ['user_id', 'poi_id']:
-        label_encoders[column] = LabelEncoder()
-        data[column] = label_encoders[column].fit_transform(data[column])
+#    label_encoders = {}
+#    for column in ['user_id', 'poi_id']:
+#        label_encoders[column] = LabelEncoder()
+#        data[column] = label_encoders[column].fit_transform(data[column])
     
 #    if target is not None:
 #        label_encoders['target'] = LabelEncoder()
