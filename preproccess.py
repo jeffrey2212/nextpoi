@@ -94,7 +94,7 @@ def process_nyc_dataset():
         pickle.dump((X_train, X_test, y_train, y_test), file)
     
 def main():
-    #process_gowalla_dataset()
+    process_gowalla_dataset()
     process_nyc_dataset()
 
 if __name__ == "__main__":
