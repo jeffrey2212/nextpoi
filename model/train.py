@@ -49,8 +49,8 @@ if __name__ == '__main__':
     # Convert data to PyTorch tensors
     X_train = torch.tensor(X_train.values, dtype=torch.float32)
     X_test = torch.tensor(X_test.values, dtype=torch.float32)
-    y_train = torch.tensor(y_train, dtype=torch.long)
-    y_test = torch.tensor(y_test, dtype=torch.long)
+    y_train = torch.tensor(y_train.to_numpy(), dtype=torch.long)
+    y_test = torch.tensor(y_test.to_numpy(), dtype=torch.long)
 
     # Create the FusionModel
     model = FusionModel(input_dim, hidden_dim, output_dim, num_heads, num_layers, num_pois, embedding_dim, dropout).to(device)
