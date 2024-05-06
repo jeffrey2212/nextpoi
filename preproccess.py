@@ -8,7 +8,6 @@ base_folder = "../dataset/"
 output_folder = "dataset/"
 
 def process_gowalla_dataset():
-
     filename = "Gowalla_totalCheckins.txt"
     datapath = base_folder + filename
     
@@ -33,6 +32,15 @@ def process_gowalla_dataset():
     data["lat_bin"] = pd.cut(data["latitude"], bins=20, labels=False)
     data["lon_bin"] = pd.cut(data["longitude"], bins=20, labels=False)
 
+    # Map user_id and poi_id to a continuous range of integers
+    unique_users = data['user_id'].unique()
+    user_to_index = {user: idx for idx, user in enumerate(unique_users)}
+    data['user_id'] = data['user_id'].map(user_to_index)
+
+    unique_pois = data['poi_id'].unique()
+    poi_to_index = {poi: idx for idx, poi in enumerate(unique_pois)}
+    data['poi_id'] = data['poi_id'].map(poi_to_index)
+
     # Create a new column "next_poi_id" by shifting the "poi_id" column by -1 within each user's sequence
     data["next_poi_id"] = data.groupby("user_id")["poi_id"].shift(-1)
 
@@ -41,7 +49,7 @@ def process_gowalla_dataset():
 
     # Split the data into features (X) and target variable (y)
     X = data[["user_id", "poi_id", "lat_bin", "lon_bin", "hour", "day", "month", "year"]]
-    y = data["next_poi_id"]
+    y = data["next_poi_id"].astype(int)  # Ensure next_poi_id is integer
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -49,7 +57,6 @@ def process_gowalla_dataset():
     # Save the preprocessed data to a pickle file
     with open(output_folder+"gowalla_preprocessed.pkl", "wb") as file:
         pickle.dump((X_train, X_test, y_train, y_test), file)
-    
 def process_nyc_dataset():
     filename = "dataset_TSMC2014_NYC.txt"
     datapath = base_folder + filename
@@ -76,21 +83,24 @@ def process_nyc_dataset():
     data["lat_bin"] = pd.cut(data["latitude"], bins=20, labels=False)
     data["lon_bin"] = pd.cut(data["longitude"], bins=20, labels=False)
 
-    # Create a new column "next_poi_id" by shifting the "poi_id" column by -1 within each user's sequence
-    data["next_poi_id"] = data.groupby("user_id")["poi_id"].shift(-1)
+    # Map POI IDs to a continuous range of integers
+    unique_pois = data['poi_id'].unique()
+    poi_to_index = {poi: idx for idx, poi in enumerate(unique_pois)}
+    data['poi_id'] = data['poi_id'].map(poi_to_index)
+    data['next_poi_id'] = data.groupby('user_id')['poi_id'].shift(-1)
 
     # Remove the last check-in for each user since it doesn't have a next POI
-    data = data[data["next_poi_id"].notna()]
+    data = data[data['next_poi_id'].notna()]
 
     # Split the data into features (X) and target variable (y)
     X = data[["user_id", "poi_id", "lat_bin", "lon_bin", "hour", "day", "month", "year"]]
-    y = data["next_poi_id"]
+    y = data["next_poi_id"].astype(int)  # Ensure next_poi_id is integer
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Save the preprocessed data to a pickle file
-    with open(output_folder+"nyc_preprocessed.pkl", "wb") as file:
+    with open(output_folder + "nyc_preprocessed.pkl", "wb") as file:
         pickle.dump((X_train, X_test, y_train, y_test), file)
     
 def main():
