@@ -15,16 +15,16 @@ class GCNLayer(nn.Module):
         return F.relu(x)
 
 class GCN(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_layers, num_pois):
         super(GCN, self).__init__()
         self.layers = nn.ModuleList()
         # First layer adjusts from the input dimension to the hidden dimension
-        self.layers.append(GCNLayer(input_dim, hidden_dim))
+        self.layers.append(GCNLayer(input_dim, hidden_dim, num_pois))
         # Intermediate layers maintain the hidden dimension
         for _ in range(1, num_layers - 1):
-            self.layers.append(GCNLayer(hidden_dim, hidden_dim))
+            self.layers.append(GCNLayer(hidden_dim, hidden_dim, num_pois))
         # Final layer adjusts from the hidden dimension to the output dimension
-        self.layers.append(GCNLayer(hidden_dim, output_dim))
+        self.layers.append(GCNLayer(hidden_dim, output_dim, num_pois))
         
     def forward(self, x, adj):
         for layer in self.layers:
