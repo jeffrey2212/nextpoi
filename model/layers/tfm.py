@@ -11,9 +11,10 @@ class TrajectoryFlowMap(nn.Module):
             num_pois, num_pois) * 0.01)  # small random initialization
 
     def forward(self, x):
-        x = x.long()  # Ensure input to embedding is of type long
+        x = x.long()
         poi_embeddings = self.embedding(x)
-        # Apply softmax to transition matrix to normalize it
+        assert not torch.isnan(self.transition_matrix).any() and not torch.isinf(
+            self.transition_matrix).any(), "Transition matrix contains NaN or Inf"
         tfm_matrix = torch.softmax(self.transition_matrix, dim=1)
         poi_embeddings_tfm = torch.matmul(tfm_matrix, poi_embeddings)
         return poi_embeddings_tfm
