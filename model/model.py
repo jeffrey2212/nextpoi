@@ -5,7 +5,7 @@ from layers import GCN, Transformer, TrajectoryFlowMap
 class FusionModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_heads, num_layers, num_pois, embedding_dim, dropout=0.1):
         super(FusionModel, self).__init__()
-        self.gcn = GCN(input_dim, hidden_dim, hidden_dim, num_layers)
+        self.gcn = GCN(input_dim, hidden_dim, hidden_dim, num_layers, num_pois)  # pass num_pois as num_nodes
         self.transformer = Transformer(hidden_dim, hidden_dim, num_heads, num_layers, dropout)
         self.tfm = TrajectoryFlowMap(num_pois, embedding_dim)
         self.fc = nn.Linear(hidden_dim + embedding_dim, output_dim)

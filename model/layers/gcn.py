@@ -15,13 +15,13 @@ class GCNLayer(nn.Module):
         return F.relu(x)
 
 class GCN(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_layers, num_nodes):
         super(GCN, self).__init__()
         self.layers = nn.ModuleList()
-        self.layers.append(GCNLayer(input_dim, hidden_dim))
+        self.layers.append(GCNLayer(input_dim, hidden_dim, num_nodes))
         for _ in range(num_layers - 2):
-            self.layers.append(GCNLayer(hidden_dim, hidden_dim))
-        self.layers.append(GCNLayer(hidden_dim, output_dim))
+            self.layers.append(GCNLayer(hidden_dim, hidden_dim, num_nodes))
+        self.layers.append(GCNLayer(hidden_dim, output_dim, num_nodes))
 
     def forward(self, x, adj):
         for layer in self.layers:
