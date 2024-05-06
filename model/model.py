@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-from layers import GCN, Transformer
-from tfm import TrajectoryFlowMap
+from layers import GCN, Transformer, TrajectoryFlowMap
 
 class FusionModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_heads, num_layers, num_pois, embedding_dim, dropout=0.1):
@@ -11,16 +10,18 @@ class FusionModel(nn.Module):
         self.tfm = TrajectoryFlowMap(num_pois, embedding_dim)
         self.fc = nn.Linear(hidden_dim + embedding_dim, output_dim)
 
-    def forward(self, x, adj_matrix):
-        # Apply GCN to capture spatial dependencies
-        x_gcn = self.gcn(x, adj_matrix)
-        
-        # Apply Transformer to capture temporal dependencies
-        x_transformer = self.transformer(x_gcn)
-        
+    def forward(self, x):
         # Apply TFM to incorporate global transition patterns
         x_tfm = self.tfm(x)
         
+        adj_matrix_learned = self.tfm.transition_matrix  # Use as adj_matrix for GCN
+        
+        # Apply GCN to capture spatial dependencies
+        x_gcn = self.gcn(x, adj_matrix_learned)
+        
+        # Apply Transformer to capture temporal dependencies
+        x_transformer = self.transformer(x_gcn)
+      
         # Concatenate the outputs from Transformer and TFM
         x_combined = torch.cat((x_transformer, x_tfm), dim=-1)
         

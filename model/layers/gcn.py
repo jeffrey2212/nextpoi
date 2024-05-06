@@ -3,13 +3,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class GCNLayer(nn.Module):
-    def __init__(self, in_features, out_features):
+    def __init__(self, in_features, out_features, num_nodes):
         super(GCNLayer, self).__init__()
         self.fc = nn.Linear(in_features, out_features)
+        self.learned_adj = nn.Parameter(torch.randn(num_nodes, num_nodes))
+        self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, x, adj):
-        x = self.fc(x)
-        x = torch.matmul(adj, x)
+    def forward(self, x):
+        adj = self.softmax(self.learned_adj)  # Optional: Apply softmax for normalization
+        x = torch.matmul(adj, self.fc(x))
         return F.relu(x)
 
 class GCN(nn.Module):
