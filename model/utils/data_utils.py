@@ -19,8 +19,8 @@ def preprocess_data(data, target=None):
         label_encoders[column] = LabelEncoder()
         data[column] = label_encoders[column].fit_transform(data[column])
     
-    if target is not None:
-        label_encoders['target'] = LabelEncoder()
-        target = label_encoders['target'].fit_transform(target)
+#    if target is not None:
+#        label_encoders['target'] = LabelEncoder()
+#        target = label_encoders['target'].fit_transform(target)
     
     return data, target, label_encoders
