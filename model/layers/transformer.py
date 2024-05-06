@@ -15,17 +15,16 @@ class TransformerLayer(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        # Self-attention
+        x = x.permute(1, 0, 2)  # Change shape to (S, N, E) for MultiheadAttention
         attn_output, _ = self.self_attention(x, x, x)
         x = x + self.dropout(attn_output)
         x = self.norm1(x)
 
-        # Feed-forward network
         ff_output = self.feed_forward(x)
         x = x + self.dropout(ff_output)
         x = self.norm2(x)
 
-        return x
+        return x.permute(1, 0, 2)  # Revert shape to (N, S, E)
 
 class Transformer(nn.Module):
     def __init__(self, input_dim, output_dim, num_heads, num_layers, dropout=0.1):
@@ -42,16 +41,16 @@ class Transformer(nn.Module):
 
 if __name__ == '__main__':
     # Define input dimensions and model hyperparameters
-    input_dim = 64
-    output_dim = 128
-    num_heads = 8
-    num_layers = 3
+    input_dim = 8
+    output_dim = 10
+    num_heads = 4
+    num_layers = 2
     dropout = 0.1
 
     # Create a sample input
     batch_size = 4
     seq_length = 10
-    x = torch.randn(seq_length, batch_size, input_dim)
+    x = torch.randn(batch_size, seq_length, input_dim)
 
     # Instantiate the Transformer model
     transformer_model = Transformer(input_dim, output_dim, num_heads, num_layers, dropout)
