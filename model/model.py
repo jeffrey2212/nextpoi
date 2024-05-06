@@ -11,6 +11,9 @@ class FusionModel(nn.Module):
         self.fc = nn.Linear(hidden_dim + embedding_dim, output_dim)
 
     def forward(self, x):
+        assert x.ge(0).all(), "Negative index detected"
+        assert x.lt(self.embedding.num_embeddings).all(), f"Index out of bounds (max valid index is {self.embedding.num_embeddings - 1})"
+        
         # Apply TFM to incorporate global transition patterns
         x_tfm = self.tfm(x)
         
