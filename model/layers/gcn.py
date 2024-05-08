@@ -10,8 +10,18 @@ class GCNLayer(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, adj):
-        adj = self.softmax(self.learned_adj)  # Optional: Apply softmax for normalization
-        x = torch.matmul(adj, self.fc(x))
+        # Reshape x to (batch_size * num_nodes, input_dim)
+        x = x.view(-1, self.fc.in_features)
+
+        # Apply linear transformation
+        x = self.fc(x)
+
+        # Reshape x back to (batch_size, num_nodes, output_dim)
+        x = x.view(-1, adj.size(0), self.fc.out_features)
+
+        # Perform matrix multiplication with the adjacency matrix
+        x = torch.matmul(adj, x)
+
         return F.relu(x)
 
 class GCN(nn.Module):
