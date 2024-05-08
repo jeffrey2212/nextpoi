@@ -85,19 +85,19 @@ def save_graph_to_csv(G, dst_dir):
                   f'{latitude},{longitude}', file=f)
 
 
-def save_graph_to_pickle(G, dst_dir):
-    pickle.dump(G, open(os.path.join(dst_dir, 'graph.pkl'), 'wb'))
+def save_graph_to_pickle(G, dst_dir, dataset):
+    pickle.dump(G, open(os.path.join(dst_dir, dataset+'_graph.pkl'), 'wb'))
 
 
-def save_graph_edgelist(G, dst_dir):
+def save_graph_edgelist(G, dst_dir,dataset):
     nodelist = G.nodes()
     node_id2idx = {k: v for v, k in enumerate(nodelist)}
 
-    with open(os.path.join(dst_dir, 'graph_node_id2idx.txt'), 'w') as f:
+    with open(os.path.join(dst_dir, dataset+ '_graph_node_id2idx.txt'), 'w') as f:
         for i, node in enumerate(nodelist):
             print(f'{node}, {i}', file=f)
 
-    with open(os.path.join(dst_dir, 'graph_edge.edgelist'), 'w') as f:
+    with open(os.path.join(dst_dir, dataset + '_graph_edge.edgelist'), 'w') as f:
         for edge in nx.generate_edgelist(G, data=['weight']):
             src_node, dst_node, weight = edge.split(' ')
             print(f'{node_id2idx[src_node]} {node_id2idx[dst_node]} {weight}', file=f)
@@ -141,8 +141,8 @@ def print_graph_statisics(G):
 
 
 if __name__ == '__main__':
-    nyc = "nyc_preprocessed.pkl"
-    gowalla = "gowalla_preprocessed.pkl"
+    nyc = "nyc.pkl"
+    gowalla = "gowalla.pkl"
     dst_dir = "dataset/tfm_map/"
     
     # Build POI checkin trajectory graph
@@ -154,6 +154,6 @@ if __name__ == '__main__':
     G = build_global_POI_checkin_graph(train_df)
 
     # Save graph to disk
-    save_graph_to_pickle(G, dst_dir=dst_dir)
-    save_graph_to_csv(G, dst_dir=dst_dir)
-    save_graph_edgelist(G, dst_dir=dst_dir)
+    save_graph_to_pickle(G, dst_dir=dst_dir, dataset="nyc")
+   # save_graph_to_csv(G, dst_dir=dst_dir)
+    save_graph_edgelist(G, dst_dir=dst_dir, dataset="nyc")

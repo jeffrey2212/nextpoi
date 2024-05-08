@@ -59,7 +59,7 @@ def process_gowalla_dataset():
 
     # Save the preprocessed data to a pickle file
     print("Gowalla: Saving preprocessed data to pickle file")
-    with open(output_folder+"gowalla_preprocessed.pkl", "wb") as file:
+    with open(output_folder+"gowalla.pkl", "wb") as file:
         pickle.dump((X_train, X_test, y_train, y_test), file)
         
     # Save the preprocessed data to CSV files
@@ -115,7 +115,7 @@ def process_nyc_dataset():
 
     # Save the preprocessed data to a pickle file
     print("NYC: Saving preprocessed data to pickle file")
-    with open(output_folder + "nyc_preprocessed.pkl", "wb") as file:
+    with open(output_folder + "nyc.pkl", "wb") as file:
         pickle.dump((X_train, X_test, y_train, y_test), file)
     
     # Save the preprocessed data to CSV files
