@@ -46,6 +46,11 @@ def process_gowalla_dataset():
     # Remove the last check-in for each user since it doesn't have a next POI
     data = data[data["next_poi_id"].notna()]
 
+    # Remove users with only one check-in
+    user_checkin_count = data.groupby("user_id").size()
+    users_to_keep = user_checkin_count[user_checkin_count > 1].index
+    data = data[data["user_id"].isin(users_to_keep)]
+    
     # Create a new column "trajectory_id" by combining user_id and check-in sequence
     data["checkin_seq"] = data.groupby("user_id").cumcount() + 1
     data["trajectory_id"] = data["user_id"].astype(str) + "_" + data["checkin_seq"].astype(str)
@@ -63,9 +68,9 @@ def process_gowalla_dataset():
         pickle.dump((X_train, X_test, y_train, y_test), file)
         
     # Save the preprocessed data to CSV files
-    print("Gowalla: Saving preprocessed data to CSV files")
-    save_to_csv(X_train, y_train, output_folder+"gowalla_train.csv")
-    save_to_csv(X_test, y_test, output_folder+"gowalla_test.csv")
+    #print("Gowalla: Saving preprocessed data to CSV files")
+    #save_to_csv(X_train, y_train, output_folder+"gowalla_train.csv")
+    #save_to_csv(X_test, y_test, output_folder+"gowalla_test.csv")
 
 def process_nyc_dataset():
     filename = "dataset_TSMC2014_NYC.txt"
@@ -102,6 +107,11 @@ def process_nyc_dataset():
     # Remove the last check-in for each user since it doesn't have a next POI
     data = data[data['next_poi_id'].notna()]
 
+    # Remove users with only one check-in
+    user_checkin_count = data.groupby("user_id").size()
+    users_to_keep = user_checkin_count[user_checkin_count > 1].index
+    data = data[data["user_id"].isin(users_to_keep)]
+    
     # Create a new column "trajectory_id" by combining user_id and check-in sequence
     data["checkin_seq"] = data.groupby("user_id").cumcount() + 1
     data["trajectory_id"] = data["user_id"].astype(str) + "_" + data["checkin_seq"].astype(str)
@@ -119,9 +129,9 @@ def process_nyc_dataset():
         pickle.dump((X_train, X_test, y_train, y_test), file)
     
     # Save the preprocessed data to CSV files
-    print("NYC: Saving preprocessed data to CSV files")
-    save_to_csv(X_train, y_train, output_folder+"nyc_train.csv")
-    save_to_csv(X_test, y_test, output_folder+"nyc_test.csv")
+    #print("NYC: Saving preprocessed data to CSV files")
+    #save_to_csv(X_train, y_train, output_folder+"nyc_train.csv")
+    #save_to_csv(X_test, y_test, output_folder+"nyc_test.csv")
 
 def save_to_csv(X, y, filename):
     # Combine the features (X) and target variable (y) into a single DataFrame
