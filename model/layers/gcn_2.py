@@ -105,7 +105,7 @@ dataset = [data]
 dataloader = DataLoader(dataset, batch_size=4, persistent_workers=True, num_workers=1)
 
 # Create a PyTorch Lightning trainer with automatic mixed precision
-trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision=16,accumulate_grad_batches=4)
+trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision="16-mixed",accumulate_grad_batches=4)
 
 if __name__ == '__main__':
     # Train the model
