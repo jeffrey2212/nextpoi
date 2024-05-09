@@ -5,6 +5,7 @@ from torch_geometric.loader import DataLoader
 import pytorch_lightning as pl
 import pickle
 import torch.nn as nn
+from torch_sparse import SparseTensor
 
 # Load the preprocessed dataset
 with open('dataset/nyc_graph.pkl', 'rb') as f:
@@ -25,11 +26,14 @@ class GCNNextPOI(pl.LightningModule):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, edge_index):
-        x = self.conv1(x, edge_index)
+        # Convert edge_index to SparseTensor
+        edge_index_tensor = SparseTensor(row=edge_index[0], col=edge_index[1], sparse_sizes=(x.size(0), x.size(0)))
+        
+        x = self.conv1(x, edge_index_tensor)
         x = F.relu(x)
         x = self.bn1(x)
         x = self.dropout(x)
-        x = self.conv2(x, edge_index)
+        x = self.conv2(x, edge_index_tensor)
         x = F.relu(x)
         x = self.bn2(x)
         x = self.dropout(x)
@@ -98,10 +102,10 @@ model = GCNNextPOI(input_dim=in_channels, hidden_dim=hidden_channels, output_dim
 
 dataset = [data]
 # Create a DataLoader
-dataloader = DataLoader(dataset, batch_size=8, persistent_workers=True, num_workers=1)
+dataloader = DataLoader(dataset, batch_size=4, persistent_workers=True, num_workers=1)
 
 # Create a PyTorch Lightning trainer with automatic mixed precision
-trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision=16)
+trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision=16,accumulate_grad_batches=4)
 
 if __name__ == '__main__':
     # Train the model
