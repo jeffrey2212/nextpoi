@@ -15,6 +15,8 @@ with open('dataset/nyc_graph.pkl', 'rb') as f:
 torch.set_float32_matmul_precision('medium')
 
 # Define the GCN model for next POI prediction
+
+
 class GCNNextPOI(pl.LightningModule):
     def __init__(self, input_dim, hidden_dim, output_dim, dropout):
         super(GCNNextPOI, self).__init__()
@@ -27,8 +29,9 @@ class GCNNextPOI(pl.LightningModule):
 
     def forward(self, x, edge_index):
         # Convert edge_index to SparseTensor
-        edge_index_tensor = SparseTensor(row=edge_index[0], col=edge_index[1], sparse_sizes=(x.size(0), x.size(0)))
-        
+        edge_index_tensor = SparseTensor(
+            row=edge_index[0], col=edge_index[1], sparse_sizes=(x.size(0), x.size(0)))
+
         x = self.conv1(x, edge_index_tensor)
         x = F.relu(x)
         x = self.bn1(x)
@@ -81,35 +84,43 @@ class GCNNextPOI(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.01, weight_decay=5e-4)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.5)
+        optimizer = torch.optim.Adam(
+            self.parameters(), lr=0.01, weight_decay=5e-4)
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer, step_size=50, gamma=0.5)
         return [optimizer], [scheduler]
+
 
 # Set device to GPU if available and set to float16
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-data = data.to(device) # Convert data to float16
+data = data.to(device)  # Convert data to float16
 data.x = data.x.to(torch.float16)
-data.edge_index = data.edge_index.to(torch.long)  # edge_index should remain in long format
+# edge_index should remain in long format
+data.edge_index = data.edge_index.to(torch.long)
 if hasattr(data, 'y'):
     data.y = data.y.to(torch.float16)
 # Set model hyperparameters
 in_channels = data.num_features
-hidden_channels = 32
+hidden_channels = 16
 out_channels = data.num_nodes  # Number of unique POIs
 
 # Create the GCNNextPOI model and convert to float16
-model = GCNNextPOI(input_dim=in_channels, hidden_dim=hidden_channels, output_dim=out_channels, dropout=0.5).half()
+model = GCNNextPOI(input_dim=in_channels, hidden_dim=hidden_channels,
+                   output_dim=out_channels, dropout=0.5).half()
 
 dataset = [data]
 # Create a DataLoader
-dataloader = DataLoader(dataset, batch_size=4, persistent_workers=False, num_workers=0)
+dataloader = DataLoader(dataset, batch_size=4,
+                        persistent_workers=False, num_workers=0)
 
 # Create a PyTorch Lightning trainer with automatic mixed precision
-trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision="16-mixed",accumulate_grad_batches=4)
+trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto",
+                     precision="16-mixed", accumulate_grad_batches=4)
 
 if __name__ == '__main__':
     # Train the model
-    trainer.fit(model, train_dataloaders=dataloader, val_dataloaders=dataloader)
+    trainer.fit(model, train_dataloaders=dataloader,
+                val_dataloaders=dataloader)
 
     # Test the model
     trainer.test(model, dataloaders=dataloader)
