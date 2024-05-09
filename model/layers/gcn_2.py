@@ -33,9 +33,9 @@ class GCNNextPOI(pl.LightningModule):
         x = F.relu(x)
         x = self.bn1(x)
         x = self.dropout(x)
-        x = self.conv2(x, edge_index_tensor)
-        x = F.relu(x)
-        x = self.bn2(x)
+     #   x = self.conv2(x, edge_index_tensor)
+     #   x = F.relu(x)
+     #   x = self.bn2(x)
         x = self.dropout(x)
         x = self.linear(x)
         return x
