@@ -20,8 +20,8 @@ class GCNNextPOI(pl.LightningModule):
         super(GCNNextPOI, self).__init__()
         self.conv1 = GCNConv(input_dim, hidden_dim)
         self.bn1 = BatchNorm(hidden_dim)
-        self.conv2 = GCNConv(hidden_dim, hidden_dim)
-        self.bn2 = BatchNorm(hidden_dim)
+      #  self.conv2 = GCNConv(hidden_dim, hidden_dim)
+       # self.bn2 = BatchNorm(hidden_dim)
         self.linear = nn.Linear(hidden_dim, output_dim)
         self.dropout = nn.Dropout(dropout)
 
