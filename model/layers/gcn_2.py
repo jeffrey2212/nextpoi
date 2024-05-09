@@ -102,7 +102,7 @@ model = GCNNextPOI(input_dim=in_channels, hidden_dim=hidden_channels, output_dim
 
 dataset = [data]
 # Create a DataLoader
-dataloader = DataLoader(dataset, batch_size=4, persistent_workers=True, num_workers=0)
+dataloader = DataLoader(dataset, batch_size=4, persistent_workers=False, num_workers=0)
 
 # Create a PyTorch Lightning trainer with automatic mixed precision
 trainer = pl.Trainer(max_epochs=100, devices="auto", accelerator="auto", precision="16-mixed",accumulate_grad_batches=4)
