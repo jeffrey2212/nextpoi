@@ -68,9 +68,9 @@ def process_gowalla_dataset():
         pickle.dump((X_train, X_test, y_train, y_test), file)
         
     # Save the preprocessed data to CSV files
-    #print("Gowalla: Saving preprocessed data to CSV files")
-    #save_to_csv(X_train, y_train, output_folder+"gowalla_train.csv")
-    #save_to_csv(X_test, y_test, output_folder+"gowalla_test.csv")
+    print("Gowalla: Saving preprocessed data to CSV files")
+    save_to_csv(X_train, y_train, output_folder+"gowalla_train.csv")
+    save_to_csv(X_test, y_test, output_folder+"gowalla_test.csv")
 
 def process_nyc_dataset():
     filename = "dataset_TSMC2014_NYC.txt"
@@ -129,9 +129,9 @@ def process_nyc_dataset():
         pickle.dump((X_train, X_test, y_train, y_test), file)
     
     # Save the preprocessed data to CSV files
-    #print("NYC: Saving preprocessed data to CSV files")
-    #save_to_csv(X_train, y_train, output_folder+"nyc_train.csv")
-    #save_to_csv(X_test, y_test, output_folder+"nyc_test.csv")
+    print("NYC: Saving preprocessed data to CSV files")
+    save_to_csv(X_train, y_train, output_folder+"nyc_train.csv")
+    save_to_csv(X_test, y_test, output_folder+"nyc_test.csv")
 
 def save_to_csv(X, y, filename):
     # Combine the features (X) and target variable (y) into a single DataFrame
